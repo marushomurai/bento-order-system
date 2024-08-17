@@ -3,4 +3,3 @@
 
 [functions]
   directory = "netlify/functions"
-  handler = "process_order"
