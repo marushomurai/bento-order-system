@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弁当注文処理システム</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>弁当注文処理システム</h1>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="uploadFile()">アップロード＆処理</button>
+    <div id="result"></div>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('ファイルを選択してください。');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const csvData = event.target.result;
+                try {
+                    const response = await fetch('/.netlify/functions/process_order', {
+                        method: 'POST',
+                        body: JSON.stringify({ csv_data: csvData }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const result = await response.json();
+                    document.getElementById('result').innerHTML = result.message;
+                } catch (error) {
+                    console.error('エラー:', error);
+                    document.getElementById('result').innerHTML = 'エラーが発生しました。';
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
